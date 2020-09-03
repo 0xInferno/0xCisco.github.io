@@ -9,16 +9,16 @@ url: "https://0xcisco.github.io/" # the base hostname & protocol for your site, 
 
 #-------------------------------
 # About Section
-author-name:   Natali Anderson
+author-name:   0xCisco
 author-avatar: 09.jpg
 
 
 #-------------------------------
 # Contact links
-facebook:  https://facebook.com/ # Add your Facebook handle
-twitter:   https://twitter.com/ # Add your Facebook handle
-instagram: https://www.instagram.com/ # Add your Facebook handle
-pinterest: https://www.pinterest.com/ # Add your Facebook handle
+facebook:  https://facebook.com/xCisc0 # Add your Facebook handle
+twitter:   https://twitter.com/0xCisco # Add your Facebook handle
+#instagram: https://www.instagram.com/ # Add your Facebook handle
+#pinterest: https://www.pinterest.com/ # Add your Facebook handle
 
 
 #-------------------------------
@@ -28,7 +28,7 @@ disqus-identifier: mr-brown # Add your shortname for Disqus Comment. For example
 
 #-------------------------------
 # Instagram Feed
-instafeed: true # To enable the instafeed, use the value true. To turn off use the value false.
+#instafeed: false # To enable the instafeed, use the value true. To turn off use the value false.
 
 
 #-------------------------------
