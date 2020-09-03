@@ -10,7 +10,7 @@ url: "https://0xcisco.github.io/" # the base hostname & protocol for your site, 
 #-------------------------------
 # About Section
 author-name:   0xCisco
-author-avatar: 09.jpg
+#author-avatar: 09.jpg
 
 
 #-------------------------------
@@ -23,7 +23,7 @@ twitter:   https://twitter.com/0xCisco # Add your Facebook handle
 
 #-------------------------------
 # Comment Section (Disqus)
-disqus-identifier: mr-brown # Add your shortname for Disqus Comment. For example mr-brown
+disqus-identifier: 0xCisco # Add your shortname for Disqus Comment. For example mr-brown
 
 
 #-------------------------------
