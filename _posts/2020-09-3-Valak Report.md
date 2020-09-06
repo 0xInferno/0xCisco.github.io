@@ -46,21 +46,27 @@ if we take a look at pestedio we get that dll
 ![pestdio](/img/Valak/pestedio.png)
 
 so after looking to the imports , intropy , strings ...etc i would do my routine while try to unpack somefile with x64 
-bp VirtualAlloc
-bp VirtualAllocEx
-bp VirtualProtect
-bp VirtualProtectEx
-bp CreateProcessInternalW
+bp VirtualAlloc , VirtualAllocEx , VirtualProtect , VirtualProtectEx , CreateProcessInternalW
+but in our case in the imports IsDebuggerPersent so another break point on it
 
-![lol](/img/Valak/explain.png)
 
-but in our case in the imports IsDebuggerPersent so another break point on it and there is another anti-debugging tech
-you will hit VirtualAlloc 3 times 
-###### First Block : is a shell code that it will executes
-###### Second Block : copied from the main Binary and Decrypted two times with shell code and it is a key to get the third block
-###### Third Block : copied from first block and decrypted from shell code with Secoand block then some of it overwrite the Dll
-in the third Block you will notice 2 MZ Signature and Some js code in the end you will know what its doing now 
+![lol](/img/Valak/dll.png)
 
+
+###### Importanat Note ...
+
+you must specify the binary you work with **Regsvr32** then change the cmd to include the dll cause it will not run if you run it with **rundll32** or loaddll from ollydbg try it on any.run [here](https://app.any.run/tasks/fcf8673a-fb77-4403-8a7d-84b436dd62b2) 
+
+![cmd](/img/Valak/cmd.png)
+
+
+So you will hit VirtualAlloc 3 times 
+###### First Block (From DLL): is a shell code that it will executes
+###### Second Block (From Shellcode) : copied from the main Binary and Decrypted two times with shell code and it is a key to get the third block
+###### Third Block (From Shellcode) : copied from first block and decrypted from shell code with Secoand block then some of it overwrite the Dll
+
+
+in the third Block you will notice 2 MZ Signature overwrite the Dll file with and Some js code in the end you will know what its doing now 
 
 ![dump1](/img/Valak/dump.png) 
 
@@ -68,11 +74,28 @@ in the third Block you will notice 2 MZ Signature and Some js code in the end yo
 
 ![dump-js](/img/Valak/dump-js.png) 
 
+So After overwrite the Orginal Binary you Can dump and i dont suggest that "its just a dropper" but if you want you Can do the following 
+
+![unpack](/img/Valak/unpack.gif)
+
+for good Q you Can download the vedio [here](https://drive.google.com/file/d/1KlpmJEOT5Ys9fmJFm0lzTReYgq3PMnX1/view?usp=sharing)
+
+
+So dump the dll with Process Hacker you will see the imports is invalid so we gonna change the Raw Adress and Raw Size "when i say raw i mean the image on disk" to make it like Virtual "image in Memory" Address is wasy but the Size i calculate it by dividing the start adress of the current Section with the start adress of the next section in the last section ".reloc" make it very big to make it fill the size of file  
+
 at least drop one file the js code you found above and run it with [Wscript](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/wscript) with WinExec WINAPI
+
+
+![WinExec](/img/Valak/WinExec.png)
+
+
+###### Lazy Like me ?
 
 or you Can just run it and watch the resaults with tool like Process Hacker or [Cmd Watcher](http://www.kahusecurity.com/tools.html) ;)
 
+
 ![Wscript](/img/Valak/wsscript.png)
+
 
 ### Third Stage : Valak ..
 
