@@ -41,9 +41,15 @@ from the pcap if you open it in wireshark you should take a look to http exporte
 
 ###### MD55 : 938B8214395F3DDE41C1646AF5558DCF 
 
-if we take a look at pestedio we get that dll 
+if we take a look at pestedio we get that dll its Orginal name is **kill.dll**
 
 ![pestdio](/img/Valak/pestedio.png)
+
+but we also see that we got some debug information also 
+
+![debuginfo](/img/Valak/debug_path.png)
+
+another thing intersting we found url but it does nothing **hxxps[:]//ladymatch[.]ru**
 
 so after looking to the imports , intropy , strings ...etc i would do my routine while try to unpack somefile with x64 
 bp VirtualAlloc , VirtualAllocEx , VirtualProtect , VirtualProtectEx , CreateProcessInternalW
@@ -56,17 +62,70 @@ but in our case in the imports IsDebuggerPersent so another break point on it
 ###### Importanat Note ...
 
 you must specify the binary you work with **Regsvr32** then change the cmd to include the dll cause it will not run if you run it with **rundll32** or loaddll from ollydbg try it on any.run [here](https://app.any.run/tasks/fcf8673a-fb77-4403-8a7d-84b436dd62b2) 
+the reason of that the dll main function after unpacking is **DllRegisterServer** that only works with regsvr32 binary
+Dont get confused i get it after ending the analysis just tell you the reason now ;)
+
 
 ![cmd](/img/Valak/cmd.png)
 
 
-So you will hit VirtualAlloc 3 times 
-###### First Block (From DLL): is a shell code that it will executes
-###### Second Block (From Shellcode) : copied from the main Binary and Decrypted two times with shell code and it is a key to get the third block
-###### Third Block (From Shellcode) : copied from first block and decrypted from shell code with Secoand block then some of it overwrite the Dll
+so First thing you will hit a Weird three VirtualProtect and one VirtualProtectEx Functions that change the same adress of memory and amount to same mem protection to make it from **RW** to **RWE**
 
 
-in the third Block you will notice 2 MZ Signature overwrite the Dll file with and Some js code in the end you will know what its doing now 
+![changeShellCodeProtection](/img/Valak/changeShellCodePrtectionBeforeAllocation.png)
+
+
+so now its time to execute that shellcode in the Orginal binary and Decrypt itself
+this Decryption algo we will met it many times in this Binary i will Call it XOR123 If i met it soon dont be confused from the name
+simply this function takes a Value to Start DEcrypt with Stored in edx take first byte of it decrypt 3 bytes with it then modify itself with Some opreation and go again till ecx become 0
+
+
+![virtual protect 1 Decode](/img/Valak/virtualProtect-1-Decode.png)
+
+
+after that it still wanna get some imports by passsing two values to the function One for module and the other for function how is that work ?
+then first he get all of the modules to file throw PEB when it get the one it wants then get into its export table and search for function names 
+
+![get modules](/img/Valak/get-imports.png)
+
+then how it knwo its the one function or module? it use a function that calculate a value take a string for the module or the function name then compare it with value if its the one he want set eax to 0 
+
+![Calculate string Value](/img/Valak/CalculateStringValueAlgorthim.png)
+
+at least he get some functions **VirtualFree** , **VirtualAlloc** , **VirtualProtect** , **FlsFree** , **GetProcAdress** , **LoadLibraryExA**
+
+i think its a good time to allocate the shell code of course it will be copied from orginal binary and jmp to it 
+
+![First Alloc](/img/Valak/FirstAlloc.png)
+
+so we talked about key of data before its time to allocate it first its data is copied from the orginal file then it decrypt twice 
+
+![Allocation of key](/img/Valak/AllocationOfKey.png)
+
+first Decryption method take a key from shellcode just a few bytes based on that bytes it copies data from one place to another from the same memory first time it do nothing as it is the same start it use the bytes of key once for copy data and the other to do some calc and increase the source of the next time we will face this method once more so i will Call it **Replacement Method**
+
+![Decode Replacing](/img/Valak/decodereplacingtothe3rdAlloc.png)
+
+Second Decryption we Dealt with before i you remmber we called it XOR123 take a look to it up if you forgot it 
+
+now we face the third and the last Call to VirtaulALlloc this time it contains some interesting stuff so 
+
+![third allocation](/img/Valak/virtualAlloc-3.png)
+
+
+now he allocate the memory then call a function that copy the data from orginal binary with the help of key 
+it takes four bytes from key the **first word --> Detrmines the length of buffer copied** and the  **secoand word --> Detrmines how many bytes should be ignored after the last data** of course the address of data in orginal binary  passed to the function as you see in the last pic
+
+
+![Virtual 3 Decode](/img/Valak/virtual-3-decode.png)
+
+
+then it frees the key as no need for it anymore and now there is two methods 
+** first one is Replacment Method but the funny thing its used with the same key XD **
+** Second Method is XOR123 ** so we end it here :)
+
+so if you take a look to this mem you will notice 2 MZ Signature overwrite the Dll file with and Some js code in the end you will know what its doing now 
+
 
 ![dump1](/img/Valak/dump.png) 
 
@@ -74,7 +133,30 @@ in the third Block you will notice 2 MZ Signature overwrite the Dll file with an
 
 ![dump-js](/img/Valak/dump-js.png) 
 
-So After overwrite the Orginal Binary you Can dump and i dont suggest that "its just a dropper" but if you want you Can do the following 
+
+now it change the the protection of orginal file 
+
+![change protection header .text](/img/Valak/changeProtection.png)
+
+and so he must zeroout file header and .text section 
+
+![zero header .text](/img/Valak/zeroOutFileheader.png)
+
+then write data **header and .text** to orginal binary from the second exe file we saw in last mem allocaion 
+
+![write header](/img/Valak/writeDatatoOrginalBinary.png)
+
+rewrite import table with LoadLibraryEx and GetProcAddress
+
+![resolve import table](/img/Valak/resolveimportTable.png)
+
+so now changing the orginal file protection and we done 
+
+![change the protection last](/img/Valak/changeProtectionTofileaftermodifing.png)
+
+so back to the orginal file and now it unpacked so you need to dump it may be with **scylla** , **ollydump** or if you an old school you could use **impREC**
+
+but there is way you might don't know follow me ;)
 
 ![unpack](/img/Valak/unpack.gif)
 
@@ -83,10 +165,11 @@ for good Q you Can download the vedio [here](https://drive.google.com/file/d/1Kl
 
 So dump the dll with Process Hacker you will see the imports is invalid so we gonna change the Raw Adress and Raw Size "when i say raw i mean the image on disk" to make it like Virtual "image in Memory" Address is wasy but the Size i calculate it by dividing the start adress of the current Section with the start adress of the next section in the last section ".reloc" make it very big to make it fill the size of file  
 
+
+so now you will see the time stamp and ther is only export function that called **DllRegisterServer** 
 at least drop one file the js code you found above and run it with [Wscript](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/wscript) with WinExec WINAPI
 
-
-![WinExec](/img/Valak/WinExec.png)
+![ida](/img/Valak/ida.png)
 
 
 ###### Lazy Like me ?
