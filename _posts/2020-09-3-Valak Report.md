@@ -217,6 +217,39 @@ kidding I deobfuscated some needed parts of it so it Can be Readable take a look
 ![ReadResponse](/img/Valak/ThirdStage/downloadFiles.png)
 
 
+### fourth Stage : downloader and launcher
+
+you can use a tool called **imaginaryC2** to unpack pcap or simulate the c2 even if its down but its impossible in our case cause the url is dynmaic based on your data , you Can find it [here](https://github.com/felixweyne/imaginaryC2)
+
+so first thing its doing to get the last **JS** file throw registry and load its objects and functions 
+
+![load functions](/img/Valak/fourthStage/getlastjs.png)
+
+then its now try to connect the same C2 Again but with diffrent url Decypt the response data as it base64 then it scans for two values 
+
+![c2 Connections](/img/Valak/fourthStage/ConnectC2.png)
+
+
+in the first case it looks for --Task it will find it with 2 values , first it makes a file stream on XML files created last Stage with one value of respond in our case **5e3fb8fe** and the other text is .exe file that is saved to the stream and run after 2 minutes 
+you can download the response after decryption [here](https://drive.google.com/file/d/1nWIsph9YUkgAgF-zj3DNsiz6puSt_GQk/view?usp=sharing) 
+
+![first response](/img/Valak/fourthStage/xmlstream.png)
+
+the second is searching for --Plugin-- that time is seaching for an argument to run the .net file that dropped last stage and run it 
+you will not find that response in the last tool so i get it from the pcap in wireshark
+**--PLUGIN3--**
+
+
+![Second Response](/img/Valak/fourthStage/getargsandrun.net.png)
+
+
+
+![packet](/img/Valak/fourthStage/packet2.png)
+
+
+
+
+
 
 
 ### IOCS
