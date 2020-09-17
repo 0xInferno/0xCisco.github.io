@@ -246,6 +246,38 @@ you will not find that response in the last tool so i get it from the pcap in wi
 
 ![packet](/img/Valak/fourthStage/packet2.png)
 
+so we end that we still have one .net binary and native binary 
+
+### fifth Stage : Credential Stealer
+
+###### PluginHost2.exe
+###### MD55 : BD2095893C3FA73141BE729880053E9C 
+
+so now we will deal with .net binary but we will also still dealing with pcap cause it also still connecting to c2 by getting it from regisrty saved but this time download a string as a raw assembly bytes **Dll**, get an object from it and at least get constructor of it 
+
+![get c2 from registry](/img/Valak/Dotnet/exe_getValidC2.png)
+
+
+![exeloaddll](/img/Valak/Dotnet/exe_loaddll.png)
+
+In genral Cases you Can just debug then dump this data save it as .bin file but now you will do the same thing with **imaginaryC2** or **WireShark** 5292 is the packet number you want its a base64 with null terminated byte remove it decode the file bingo!
+
+![exeloaddll](/img/Valak/Dotnet/dll_dump.png)
+
+###### MangedPlugin.dll
+###### MD55 : 444E0C51C6C09DC43E67FECF7F3000FE
+
+So first thing it import CredEnumrate from Advapi32 to get credential of the Current Session
+
+![import advapi32](/img/Valak/Dotnet/dll_getCredentiel.png)
+
+then searching fro Outlook or office if it exssits or not if it  is , it will search in path **C:\Users\User\AppData\Local\Microsoft** for AutoDiscover.xml get the Data from it decode it with base64 then connect to C2 **you will not found that request in pcap may be the infected machine has no outlook on it**
+
+![dll Xml](/img/Valak/Dotnet/dll_autoDiscoverxml.png)
+
+then get the hashed user data saved in **HKEY_CURRENT_USER\Software\ApplicationContainer\Appsw64\SetupServiceKey** with getid() function then send the reqest with data 
+
+![get query](/img/Valak/Dotnet/dll_urlgenrator.png)
 
 
 
@@ -254,10 +286,13 @@ you will not find that response in the last tool so i get it from the pcap in wi
 
 ### IOCS
 
+
 | TYPE  | IOC               |
 |:------|:------------------|
 | Hash  | 49B144E57ED80D54533CF9B3C70D3FB4 |  
 | Hash  | 938B8214395F3DDE41C1646AF5558DCF |
+| Hash  | BD2095893C3FA73141BE729880053E9C |
+| Hash  | 444E0C51C6C09DC43E67FECF7F3000FE |
 | Registry | HKEY_CURRENT_USER\\Software\\ApplicationContainer\\Appsw64\\ |
 | Path  | C:\\Users\\Public\\MUIRtcp.xml |
 | Path  | C:\\Users\\Public\\MUIJobsParser.js |
