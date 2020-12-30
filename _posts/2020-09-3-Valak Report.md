@@ -8,7 +8,7 @@ tag:   [Malware Analysis , Valak]
 
 ### Introduction 
 
-before that we just consider Valak as loader but it developed to become more than **Inforamtion Stealer** that and in last few months there was many waves of attacks with valak 
+before that we just consider Valak as loader but it developed to become more than **Inforamtion Stealer - outlook** that and in last few months there was many waves of attacks with valak 
 
 I got the malware from malware traffic analysis you Can find the files [here](https://www.malware-traffic-analysis.net/2020/07/01/index.html)
 
