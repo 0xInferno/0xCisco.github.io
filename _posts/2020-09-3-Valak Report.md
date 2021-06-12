@@ -61,9 +61,9 @@ but in our case in the imports IsDebuggerPersent so another break point on it
 
 ###### Importanat Note ...
 
-you must specify the binary you work with **Regsvr32** then change the cmd to include the dll cause it will not run if you run it with **rundll32** or loaddll from ollydbg try it on any.run [here](https://app.any.run/tasks/fcf8673a-fb77-4403-8a7d-84b436dd62b2) 
-the reason of that the dll main function after unpacking is **DllRegisterServer** that only works with regsvr32 binary
-Dont get confused i get it after ending the analysis just tell you the reason now ;)
+you must specify the binary you work with **Regsvr32** then change the cmd to include the dll cause it is hard run it with **rundll32**-I mean you should specify function name or ordinal number - or loaddll from ollydbg try it on any.run [here](https://app.any.run/tasks/fcf8673a-fb77-4403-8a7d-84b436dd62b2) 
+the reason of that the dll main function after unpacking is **DllRegisterServer** that better works with regsvr32 binary
+Dont get confused i get it after ending the analysis just tell you the reason now ;) or you can just try your luck with ***rundll32 dllname.dll,#1*** 
 
 
 ![cmd](/img/Valak/SecondStage/cmd.png)
